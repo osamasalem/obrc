@@ -5,8 +5,6 @@ use std::string::FromUtf16Error;
 
 use rayon::iter::ParallelIterator;
 use rayon::str::ParallelString;
-//use tokio::fs::File;
-//use tokio::io::{AsyncBufReadExt, BufReader};
 
 use std::fs::{self, File};
 use std::io::Write;
@@ -29,6 +27,7 @@ impl Default for Record {
         }
     }
 }
+
 // TODO: To be optimized !!
 fn main() {
     let content = fs::read_to_string("measurements-10000000.txt").unwrap();
@@ -41,7 +40,7 @@ fn main() {
             let second = split.next()?.parse::<f32>().ok()?;
             Some((first, second))
         })
-        .fold(HashMap::<_, Record>::new, |mut acc, (station, degree)| {
+        .fold(HashMap::new, |mut acc, (station, degree)| {
             let rec = acc.entry(station).or_insert(Record::default());
 
             if degree > rec.max {
@@ -76,17 +75,8 @@ fn main() {
         });
 
     let mut file = BufWriter::new(File::create("output.csv").unwrap());
-    res.into_iter().for_each(
-        |(
-            k,
-            Record {
-                min,
-                max,
-                avg,
-                count: _,
-            },
-        )| {
+    res.into_iter()
+        .for_each(|(k, Record { min, max, avg, .. })| {
             writeln!(file, "{k};{min};{max};{avg:.1}").unwrap();
-        },
-    );
+        });
 }
