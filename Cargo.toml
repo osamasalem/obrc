@@ -4,4 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+fast-float2 = "0.2.3"
+memchr = "2.7.6"
+memmap2 = "0.9.9"
 rayon = "1.11.0"
+
+[profile.release]
+debug = 1
